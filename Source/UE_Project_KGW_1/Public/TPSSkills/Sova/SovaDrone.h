@@ -30,6 +30,8 @@ public:
 
 	void SetupComponent();
 
+	void DestoryDrone();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -48,10 +50,19 @@ public:
 
 protected:
 	UFUNCTION()
-	void MoveUpDown(const FInputActionValue& Value);
-
+	void MoveFlight(const FInputActionValue& Value);
 	UFUNCTION()
-	void MoveForawardBack(const FInputActionValue& Value);
+	void MoveForaward(const FInputActionValue& Value);
+	UFUNCTION()
+	void MoveRight(const FInputActionValue& Value);
+	UFUNCTION()
+	void MoveLook(const FInputActionValue& Value);
+	UFUNCTION()
+	void MoveTurn(const FInputActionValue& Value);
+	UFUNCTION()
+	void DroneAttack(const FInputActionValue& Value);
+	UFUNCTION()
+	void DroneExit(const FInputActionValue& Value);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DroneInfo")
