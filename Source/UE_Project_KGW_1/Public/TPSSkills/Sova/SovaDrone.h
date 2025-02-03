@@ -6,24 +6,61 @@
 #include "GameFramework/Pawn.h"
 #include "SovaDrone.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UBoxComponent;
+
+struct FInputActionValue;
+
 UCLASS()
 class UE_PROJECT_KGW_1_API ASovaDrone : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	ASovaDrone();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void SetupComponent();
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
+	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
+	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UBoxComponent* BoxComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UStaticMeshComponent* StaticMeshComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DroneInfo")
+	float MoveSpeed;
+
+protected:
+	UFUNCTION()
+	void MoveUpDown(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void MoveForawardBack(const FInputActionValue& Value);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DroneInfo")
+	float Gravity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DroneInfo")
+	float DurationTime;
+
+protected:
+	FTimerHandle DestructionTimer;
 
 };
