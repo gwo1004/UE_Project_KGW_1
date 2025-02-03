@@ -32,6 +32,15 @@ public:
 
 	void DestoryDrone();
 
+	UFUNCTION()
+	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+		const FHitResult& Hit);
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -54,7 +63,11 @@ protected:
 	UFUNCTION()
 	void MoveForaward(const FInputActionValue& Value);
 	UFUNCTION()
+	void StopForaward(const FInputActionValue& Value);
+	UFUNCTION()
 	void MoveRight(const FInputActionValue& Value);
+	UFUNCTION()
+	void StopRight(const FInputActionValue& Value);
 	UFUNCTION()
 	void MoveLook(const FInputActionValue& Value);
 	UFUNCTION()
@@ -67,9 +80,24 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DroneInfo")
 	float Gravity;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DroneInfo")
+	bool bIsGround;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DroneInfo")
 	float DurationTime;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float CurrentPitchAngle;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float CurrentRollAngle;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float TargetPitchAngle;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float TargetRollAngle;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float MaxOrientation;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "DroneInfo")
+	float OrientationSpeed;
 
 protected:
 	FTimerHandle DestructionTimer;

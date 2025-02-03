@@ -9,10 +9,8 @@
 #include "PlayerGameFramework\PlayableController.h"
 #include "DataAssets\DroneInputDataAsset.h"
 
-// Sets default values
 ASovaDrone::ASovaDrone()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SetupComponent();
 
@@ -20,27 +18,48 @@ ASovaDrone::ASovaDrone()
 
 	DurationTime = 300.0f;
 	MoveSpeed = 10.f;
-	Gravity = -50.f;
+	Gravity = -5.f;
 
-
+	// Orientation
+	CurrentPitchAngle = 0.f;
+	CurrentRollAngle = 0.f;
+	TargetPitchAngle = 0.f;
+	TargetRollAngle = 0.f;
+	MaxOrientation = 20.f;
+	OrientationSpeed = 5.f;
 }
 
-// Called when the game starts or when spawned
 void ASovaDrone::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	GetWorld()->GetTimerManager().SetTimer(DestructionTimer, this, &ASovaDrone::DestoryDrone, DurationTime, false);
+	BoxComp->OnComponentHit.AddDynamic(this, &ASovaDrone::OnHit);
+	BoxComp->OnComponentEndOverlap.AddDynamic(this, &ASovaDrone::OnEndOverlap);
+
+	bIsGround = false;
 }
 
-// Called every frame
 void ASovaDrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CurrentRollAngle = FMath::FInterpTo(CurrentRollAngle, TargetRollAngle, DeltaTime, OrientationSpeed);
+	CurrentPitchAngle = FMath::FInterpTo(CurrentPitchAngle, TargetPitchAngle, DeltaTime, OrientationSpeed);
+	
+	FRotator CurrentRotation = GetActorRotation();
+	CurrentRotation.Roll = CurrentRollAngle;
+	CurrentRotation.Pitch = CurrentPitchAngle;
+
+	SetActorRotation(CurrentRotation);
+
+	if (!bIsGround)
+	{
+		FVector GravityMovement = FVector(0.f, 0.f, Gravity);
+		AddActorWorldOffset(GravityMovement, true);
+	}
 }
 
-// Called to bind functionality to input
 void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -51,7 +70,9 @@ void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		{
 			EnhancedInput->BindAction(PC->InputActions->MoveFlight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveFlight);
 			EnhancedInput->BindAction(PC->InputActions->MoveForward, ETriggerEvent::Triggered, this, &ASovaDrone::MoveForaward);
+			EnhancedInput->BindAction(PC->InputActions->MoveForward, ETriggerEvent::Completed, this, &ASovaDrone::StopForaward);
 			EnhancedInput->BindAction(PC->InputActions->MoveRight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveRight);
+			EnhancedInput->BindAction(PC->InputActions->MoveRight, ETriggerEvent::Completed, this, &ASovaDrone::StopRight);
 			EnhancedInput->BindAction(PC->InputActions->MoveLook, ETriggerEvent::Triggered, this, &ASovaDrone::MoveLook);
 			EnhancedInput->BindAction(PC->InputActions->MoveTurn, ETriggerEvent::Triggered, this, &ASovaDrone::MoveTurn);
 			EnhancedInput->BindAction(PC->InputActions->DroneAttack, ETriggerEvent::Started, this, &ASovaDrone::DroneAttack);
@@ -63,6 +84,10 @@ void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void ASovaDrone::SetupComponent()
 {
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BoxComp->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	BoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
 	RootComponent = BoxComp;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -125,22 +150,71 @@ void ASovaDrone::DestoryDrone()
 	Destroy();
 }
 
+void ASovaDrone::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	bIsGround = false;
+	UE_LOG(LogTemp, Log, TEXT("Drone Left the Ground"));
+	
+}
+
+void ASovaDrone::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor)
+	{
+		bIsGround = true;
+		UE_LOG(LogTemp, Log, TEXT("Drone OnHit"));
+	}
+}
+
 void ASovaDrone::MoveFlight(const FInputActionValue& Value)
 {
 	const float MoveInput = Value.Get<float>();
+	bIsGround = false;
+
 	AddActorLocalOffset(FVector(0.f, 0.f, MoveInput * MoveSpeed));
 }
 
 void ASovaDrone::MoveForaward(const FInputActionValue& Value)
 {
 	const float MoveInput = Value.Get<float>();
-	AddActorLocalOffset(FVector(MoveInput * MoveSpeed, 0.f, 0.f));
+	TargetPitchAngle = MoveInput * -MaxOrientation;
+
+	FMatrix RotationMatrix = FRotationMatrix(GetActorRotation());
+	FVector ForwardDirection = RotationMatrix.GetUnitAxis(EAxis::X);
+	ForwardDirection.Z = 0.f;
+	
+	FVector TranslationOffset = ForwardDirection * MoveInput * MoveSpeed;
+	FTransform MoveTransform = GetActorTransform();
+
+	MoveTransform.AddToTranslation(TranslationOffset);
+	SetActorTransform(MoveTransform);
+}
+
+void ASovaDrone::StopForaward(const FInputActionValue& Value)
+{
+	TargetPitchAngle = 0.f;
 }
 
 void ASovaDrone::MoveRight(const FInputActionValue& Value)
 {
 	const float MoveInput = Value.Get<float>();
-	AddActorLocalOffset(FVector(0.f, MoveInput * MoveSpeed, 0.f));
+	TargetRollAngle = MoveInput * MaxOrientation;
+
+	FMatrix RotationMatrix = FRotationMatrix(GetActorRotation());
+	FVector RightDirection = RotationMatrix.GetUnitAxis(EAxis::Y);
+	RightDirection.Z = 0.f;
+
+	FVector TranslationOffset = RightDirection * MoveInput * MoveSpeed;
+	FTransform MoveTransform = GetActorTransform();
+
+	MoveTransform.AddToTranslation(TranslationOffset);
+	SetActorTransform(MoveTransform);
+}
+
+void ASovaDrone::StopRight(const FInputActionValue& Value)
+{
+	TargetRollAngle = 0.f;
 }
 
 void ASovaDrone::MoveLook(const FInputActionValue& Value)
@@ -166,3 +240,10 @@ void ASovaDrone::DroneExit(const FInputActionValue& Value)
 {
 	DestoryDrone();
 }
+
+/*
+TODO:
+과제 제출 후 관련 브랜치 작업
+Physics와 FlightComponent를 사용한 자연스러운 비행 / 중력 / 충돌처리
+Character <-> Pawn 빙의 
+*/
