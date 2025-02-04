@@ -17,16 +17,16 @@ ASovaDrone::ASovaDrone()
 	bUseControllerRotationYaw = true;
 
 	DurationTime = 300.0f;
-	MoveSpeed = 10.f;
+	MoveSpeed = 20.f;
 	Gravity = -5.f;
 
-	// Orientation
+	CurrentVelocity = FVector::ZeroVector;
 	CurrentPitchAngle = 0.f;
 	CurrentRollAngle = 0.f;
 	TargetPitchAngle = 0.f;
 	TargetRollAngle = 0.f;
 	MaxOrientation = 20.f;
-	OrientationSpeed = 5.f;
+	InterpSpeed = 1.f;
 }
 
 void ASovaDrone::BeginPlay()
@@ -34,8 +34,6 @@ void ASovaDrone::BeginPlay()
 	Super::BeginPlay();
 	
 	GetWorld()->GetTimerManager().SetTimer(DestructionTimer, this, &ASovaDrone::DestoryDrone, DurationTime, false);
-	BoxComp->OnComponentHit.AddDynamic(this, &ASovaDrone::OnHit);
-	BoxComp->OnComponentEndOverlap.AddDynamic(this, &ASovaDrone::OnEndOverlap);
 
 	bIsGround = false;
 }
@@ -44,20 +42,8 @@ void ASovaDrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CurrentRollAngle = FMath::FInterpTo(CurrentRollAngle, TargetRollAngle, DeltaTime, OrientationSpeed);
-	CurrentPitchAngle = FMath::FInterpTo(CurrentPitchAngle, TargetPitchAngle, DeltaTime, OrientationSpeed);
-	
-	FRotator CurrentRotation = GetActorRotation();
-	CurrentRotation.Roll = CurrentRollAngle;
-	CurrentRotation.Pitch = CurrentPitchAngle;
-
-	SetActorRotation(CurrentRotation);
-
-	if (!bIsGround)
-	{
-		FVector GravityMovement = FVector(0.f, 0.f, Gravity);
-		AddActorWorldOffset(GravityMovement, true);
-	}
+	UpdateLocationAndRotation(DeltaTime);
+	CheckGround();
 }
 
 void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -150,29 +136,63 @@ void ASovaDrone::DestoryDrone()
 	Destroy();
 }
 
-void ASovaDrone::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+
+void ASovaDrone::UpdateLocationAndRotation(float DeltaTime)
 {
-	bIsGround = false;
-	UE_LOG(LogTemp, Log, TEXT("Drone Left the Ground"));
+	CurrentRollAngle = FMath::FInterpTo(CurrentRollAngle, TargetRollAngle, DeltaTime, InterpSpeed);
+	CurrentPitchAngle = FMath::FInterpTo(CurrentPitchAngle, TargetPitchAngle, DeltaTime, InterpSpeed);
+
+	FRotator CurrentRotation = GetActorRotation();
+	CurrentRotation.Roll = CurrentRollAngle;
+	CurrentRotation.Pitch = CurrentPitchAngle;
+	SetActorRotation(CurrentRotation);
+
+	CurrentVelocity = FMath::VInterpTo(CurrentVelocity, FVector::ZeroVector, DeltaTime, InterpSpeed);
 	
+	if (!CurrentVelocity.IsNearlyZero())
+	{
+		FTransform MoveTransform = GetActorTransform();
+		MoveTransform.AddToTranslation(CurrentVelocity * DeltaTime);
+		SetActorTransform(MoveTransform);
+	}
 }
 
-void ASovaDrone::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASovaDrone::CheckGround()
 {
-	if (OtherActor)
+	FHitResult HitResult;
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0.f, 0.f, BoxComp->GetScaledBoxExtent().Z + 10.f);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
+
+	if (bHit)
 	{
 		bIsGround = true;
-		UE_LOG(LogTemp, Log, TEXT("Drone OnHit"));
+		Gravity = 0.f;
+		UE_LOG(LogTemp, Log, TEXT("Drone Ground true"));
+	}
+	else
+	{
+		bIsGround = false;
+		Gravity = -5.f;
+		UE_LOG(LogTemp, Log, TEXT("Drone Ground False"));
+	}
+
+	if (!bIsGround)
+	{
+		FVector GravityMovement = FVector(0.f, 0.f, Gravity);
+		AddActorWorldOffset(GravityMovement, true);
 	}
 }
 
 void ASovaDrone::MoveFlight(const FInputActionValue& Value)
 {
 	const float MoveInput = Value.Get<float>();
-	bIsGround = false;
 
-	AddActorLocalOffset(FVector(0.f, 0.f, MoveInput * MoveSpeed));
+	AddActorLocalOffset(FVector(0.f, 0.f, MoveInput * 10.f));
 }
 
 void ASovaDrone::MoveForaward(const FInputActionValue& Value)
@@ -185,10 +205,9 @@ void ASovaDrone::MoveForaward(const FInputActionValue& Value)
 	ForwardDirection.Z = 0.f;
 	
 	FVector TranslationOffset = ForwardDirection * MoveInput * MoveSpeed;
-	FTransform MoveTransform = GetActorTransform();
 
-	MoveTransform.AddToTranslation(TranslationOffset);
-	SetActorTransform(MoveTransform);
+	CurrentVelocity.X += TranslationOffset.X;
+	CurrentVelocity.Y += TranslationOffset.Y;
 }
 
 void ASovaDrone::StopForaward(const FInputActionValue& Value)
@@ -206,10 +225,8 @@ void ASovaDrone::MoveRight(const FInputActionValue& Value)
 	RightDirection.Z = 0.f;
 
 	FVector TranslationOffset = RightDirection * MoveInput * MoveSpeed;
-	FTransform MoveTransform = GetActorTransform();
-
-	MoveTransform.AddToTranslation(TranslationOffset);
-	SetActorTransform(MoveTransform);
+	CurrentVelocity.X += TranslationOffset.X;
+	CurrentVelocity.Y += TranslationOffset.Y;
 }
 
 void ASovaDrone::StopRight(const FInputActionValue& Value)
@@ -244,6 +261,6 @@ void ASovaDrone::DroneExit(const FInputActionValue& Value)
 /*
 TODO:
 과제 제출 후 관련 브랜치 작업
-Physics와 FlightComponent를 사용한 자연스러운 비행 / 중력 / 충돌처리
+자연스러운 비행 / 중력 / 충돌처리
 Character <-> Pawn 빙의 
 */
