@@ -177,11 +177,13 @@ void ASovaDrone::CheckGround()
 	{
 		bIsGround = true;
 		Gravity = 0.f;
+		UE_LOG(LogTemp, Log, TEXT("Drone Ground true"));
 	}
 	else
 	{
 		bIsGround = false;
 		Gravity = -5.f;
+		UE_LOG(LogTemp, Log, TEXT("Drone Ground False"));
 	}
 
 	if (!bIsGround)

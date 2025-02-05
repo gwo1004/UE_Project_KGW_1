@@ -21,7 +21,7 @@ void APlayableController::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
+	
 void APlayableController::SetupInputComponent()
 {
 }
@@ -34,6 +34,10 @@ void APlayableController::SwitchControlMode(EControlMode Mode)
 		{
 			SubSystem->ClearAllMappings();
 			SubSystem->AddMappingContext(IMCMap[Mode], 0);
-		}
 	}
+
+}
+
+void APlayableController::SetupInputComponent()
+{
 }

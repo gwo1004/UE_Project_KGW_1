@@ -43,7 +43,7 @@ struct FPlayerDefaultInputKeyMapping
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FKey DefaultKey;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ETriggerEvent Trigger;
 
@@ -78,4 +78,6 @@ UPrimaryDataAsset
 
 UI를 추가한 설계에서 조작키 변경에 대한 기본값 저장 및 런타임 환경에서 검색/수정,
 멀티플레이 환경을 고려하여 UPrimaryDataAsset 클래스 기반으로 생성하였습니다.
+
+TODO : 캐릭터 Enhanced Input Branch에서 설계하기
 */
