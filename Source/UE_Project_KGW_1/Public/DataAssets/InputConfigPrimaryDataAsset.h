@@ -43,6 +43,9 @@ struct FPlayerDefaultInputKeyMapping
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FKey DefaultKey;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ETriggerEvent Trigger;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
 	TArray<UInputModifier*> Modifiers;
@@ -55,7 +58,7 @@ class UE_PROJECT_KGW_1_API UInputConfigPrimaryDataAsset : public UPrimaryDataAss
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TArray<FPlayerDefaultInputKeyMapping> DefaultKeyMappings;
+	TArray<FPlayerDefaultInputKeyMapping> KeyMappings;
 };
 
 /*

@@ -3,8 +3,8 @@
 
 #include "PlayerGameFramework/PlayableController.h"
 #include "EnhancedInputSubsystems.h"
+#include "DataAssets\InputConfigPrimaryDataAsset.h"
 #include "DataAssets\DroneInputDataAsset.h"
-
 
 APlayableController::APlayableController()
 {

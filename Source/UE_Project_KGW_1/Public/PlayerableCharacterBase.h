@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "IPlayerSkill.h"
+#include "DataAssets\InputConfigPrimaryDataAsset.h"
 #include "PlayerableCharacterBase.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
+class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
@@ -27,12 +29,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerSkillInputComponent(class UEnhancedInputComponent* PlayerInputComponent) {};
 
-	virtual void TPSMainSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSMainSkill, );
-	virtual void TPSFirstSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSFirstSkill, );
-	virtual void TPSSecondSubSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSSecondSubSkill, );
-	virtual void TPSUltSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSUltSkill, );
-	virtual void FPSMainSkill() override PURE_VIRTUAL(APlayableCharacterBase::FPSSkill, );
+	virtual void TPSMainSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::TPSMainSkill, );
+	virtual void TPSFirstSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::TPSFirstSkill, );
+	virtual void TPSSecondSubSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::TPSSecondSubSkill, );
+	virtual void TPSUltSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::TPSUltSkill, );
+	virtual void FPSMainSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::FPSMainSkill, );
 protected:
 	// Constructor Settings
 	UFUNCTION()
@@ -48,7 +51,11 @@ protected:
 	UFUNCTION()
 	void MoveLeft(const FInputActionValue& Value);
 	UFUNCTION()
+	void InputJump(const FInputActionValue& Value);
+	UFUNCTION()
 	void LookUp(const FInputActionValue& Value);
+	UFUNCTION()
+	void InputCrouch(const FInputActionValue& Value);
 	UFUNCTION()
 	void ConvertCameraActive(const FInputActionValue& Value);
 
@@ -65,4 +72,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera");
 	bool bUseFPSCamera;
+
+private:
+	// BindActions from DataAssetData;
+	TMap<EPlayableInputAction, UInputAction*> InputActionMap;
+	TMap<EPlayableInputAction, ETriggerEvent> InputTriggers;
+	TMap<EPlayableInputAction, void(APlayerableCharacterBase::*)(const FInputActionValue&)> InputActionBindings;
+
+	void BindMapToDataAsset();
 };
