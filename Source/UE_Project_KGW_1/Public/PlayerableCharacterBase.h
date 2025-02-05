@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "IPlayerSkill.h"
 #include "PlayerableCharacterBase.generated.h"
 
 class USpringArmComponent;
@@ -12,7 +13,7 @@ class UCameraComponent;
 struct FInputActionValue;
 
 UCLASS()
-class UE_PROJECT_KGW_1_API APlayerableCharacterBase : public ACharacter
+class UE_PROJECT_KGW_1_API APlayerableCharacterBase : public ACharacter, public IIPlayerSkill
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,11 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void TPSMainSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSMainSkill, );
+	virtual void TPSFirstSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSFirstSkill, );
+	virtual void TPSSecondSubSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSSecondSubSkill, );
+	virtual void TPSUltSkill() override PURE_VIRTUAL(APlayableCharacterBase::TPSUltSkill, );
+	virtual void FPSMainSkill() override PURE_VIRTUAL(APlayableCharacterBase::FPSSkill, );
 protected:
 	// Constructor Settings
 	UFUNCTION()
@@ -59,7 +65,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera");
 	bool bUseFPSCamera;
-
-
-	
 };

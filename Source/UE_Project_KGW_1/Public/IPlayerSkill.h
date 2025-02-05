@@ -23,11 +23,11 @@ class UE_PROJECT_KGW_1_API IIPlayerSkill
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	// TPS
-	virtual void SkillQ() = 0;
-	virtual void SkillC() = 0;
-	virtual void SkillE() = 0;
-	virtual void SkillX() = 0;
+	virtual void TPSMainSkill() = 0;
+	virtual void TPSFirstSkill() = 0;
+	virtual void TPSSecondSubSkill() = 0;
+	virtual void TPSUltSkill() = 0;
 
 	// FPS
-	virtual void SkillWheelUp() = 0;
+	virtual void FPSMainSkill() = 0;
 };
