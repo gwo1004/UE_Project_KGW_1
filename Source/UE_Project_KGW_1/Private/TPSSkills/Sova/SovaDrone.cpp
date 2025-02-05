@@ -54,15 +54,20 @@ void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	{
 		if (APlayableController* PC = Cast<APlayableController>(GetController()))
 		{
-			EnhancedInput->BindAction(PC->InputActions->MoveFlight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveFlight);
-			EnhancedInput->BindAction(PC->InputActions->MoveForward, ETriggerEvent::Triggered, this, &ASovaDrone::MoveForaward);
-			EnhancedInput->BindAction(PC->InputActions->MoveForward, ETriggerEvent::Completed, this, &ASovaDrone::StopForaward);
-			EnhancedInput->BindAction(PC->InputActions->MoveRight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveRight);
-			EnhancedInput->BindAction(PC->InputActions->MoveRight, ETriggerEvent::Completed, this, &ASovaDrone::StopRight);
-			EnhancedInput->BindAction(PC->InputActions->MoveLook, ETriggerEvent::Triggered, this, &ASovaDrone::MoveLook);
-			EnhancedInput->BindAction(PC->InputActions->MoveTurn, ETriggerEvent::Triggered, this, &ASovaDrone::MoveTurn);
-			EnhancedInput->BindAction(PC->InputActions->DroneAttack, ETriggerEvent::Started, this, &ASovaDrone::DroneAttack);
-			EnhancedInput->BindAction(PC->InputActions->DroneExit, ETriggerEvent::Started, this, &ASovaDrone::DroneExit);
+			if (UDroneInputDataAsset* InputActions = Cast<UDroneInputDataAsset>(PC->IAMap[EControlMode::DRONE]))
+			{
+				PC->SwitchControlMode(EControlMode::DRONE);
+
+				EnhancedInput->BindAction(InputActions->MoveFlight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveFlight);
+				EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Triggered, this, &ASovaDrone::MoveForaward);
+				EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Completed, this, &ASovaDrone::StopForaward);
+				EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveRight);
+				EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Completed, this, &ASovaDrone::StopRight);
+				EnhancedInput->BindAction(InputActions->MoveLook, ETriggerEvent::Triggered, this, &ASovaDrone::MoveLook);
+				EnhancedInput->BindAction(InputActions->MoveTurn, ETriggerEvent::Triggered, this, &ASovaDrone::MoveTurn);
+				EnhancedInput->BindAction(InputActions->DroneAttack, ETriggerEvent::Started, this, &ASovaDrone::DroneAttack);
+				EnhancedInput->BindAction(InputActions->DroneExit, ETriggerEvent::Started, this, &ASovaDrone::DroneExit);
+			}
 		}
 	}
 }
@@ -227,6 +232,8 @@ void ASovaDrone::MoveRight(const FInputActionValue& Value)
 	FVector TranslationOffset = RightDirection * MoveInput * MoveSpeed;
 	CurrentVelocity.X += TranslationOffset.X;
 	CurrentVelocity.Y += TranslationOffset.Y;
+
+	UE_LOG(LogTemp, Warning, TEXT("Test : %.2f"), MoveInput);
 }
 
 void ASovaDrone::StopRight(const FInputActionValue& Value)

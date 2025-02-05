@@ -55,7 +55,7 @@ void AMoveActorSpawner::SpawnActorSettingWithRand(TSubclassOf<AMoveActorBase>& S
 	FRotator SpawnRotation = GetActorRotation() + FRotator(FMath::FRandRange(0.f, 360.f));
 
 	AMoveActorBase* SpawnActor = GetWorld()->SpawnActorDeferred<AMoveActorBase>(SpawnData, FTransform(SpawnRotation, SpawnLocation), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
-
+	
 	if (SpawnActor)
 	{
 		SpawnActor->bIsSpawnLimit = true;
