@@ -13,6 +13,14 @@
 class UInputMappingContext;
 class UDroneInputDataAsset;
 
+UENUM(BlueprintType)
+enum class EControlMode : uint8
+{
+	TPSCharacter UMETA(DisplayName = "TPSCharacter"),
+	FPSCharacter UMETA(DisplayName = "FPSCharacter"),
+	DRONE	UMETA(DisplayName = "Drone")
+};
+
 UCLASS()
 class UE_PROJECT_KGW_1_API APlayableController : public APlayerController
 {
@@ -23,12 +31,14 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+	UFUNCTION()
+	void SwitchControlMode(EControlMode Mode);
+
+	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
-	UInputMappingContext* InputMappingContext;
+	TMap<EControlMode, UInputMappingContext*> IMCMap;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
-	UDroneInputDataAsset* InputActions;
-
-	//TODO : Character IMC / IA 추가
+	TMap<EControlMode, UDataAsset*> IAMap;
 };

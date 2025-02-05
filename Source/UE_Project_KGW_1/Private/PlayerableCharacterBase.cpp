@@ -4,6 +4,9 @@
 #include "PlayerableCharacterBase.h"
 #include <GameFramework\SpringArmComponent.h>
 #include <Camera\CameraComponent.h>
+#include <EnhancedInputComponent.h>
+#include <InputActionValue.h>
+#include "PlayerGameFramework\PlayableController.h"
 
 APlayerableCharacterBase::APlayerableCharacterBase()
 {
@@ -29,6 +32,13 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if (APlayerController* PC = Cast<APlayableController>(GetController()))
+		{
+
+		}
+	}
 }
 
 void APlayerableCharacterBase::SpawnSetUpCamera()

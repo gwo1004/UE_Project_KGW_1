@@ -10,10 +10,33 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EPlayableInputAction : uint8
+{
+	MoveForward		UMETA(DisplayName = "Move Forward"),
+	MoveBack		UMETA(DisplayName = "Move Back"),
+	MoveRight		UMETA(DisplayName = "Move Right"),
+	MoveLeft		UMETA(DisplayName = "Move Left"),
+	Jump			UMETA(DisplayName = "Jump"),
+	LookUp			UMETA(DisplayName = "LookUp"),
+	Crouch			UMETA(DisplayName = "Crouch"),
+	ConvertCamera	UMETA(DisplayName = "Convert Camera"),
+	TPSMainSkill	UMETA(DisplayName = "TPS MainSkill"),
+	TPSFirstSkill	UMETA(DisplayName = "TPS FirstSkill"),
+	TPSSecondSkill	UMETA(DisplayName = "TPS SecondSkill"),
+	TPSUltSkill		UMETA(DisplayName = "TPS UltSkill"),
+	FPSMainSkill	UMETA(DisplayName = "FPS MainSkill")
+
+	// TODO : UI관련 조작키 추가
+};
+
 USTRUCT(BlueprintType)
 struct FPlayerDefaultInputKeyMapping
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EPlayableInputAction InputActionEnum;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UInputAction* InputAction;
@@ -52,6 +75,4 @@ UPrimaryDataAsset
 
 UI를 추가한 설계에서 조작키 변경에 대한 기본값 저장 및 런타임 환경에서 검색/수정,
 멀티플레이 환경을 고려하여 UPrimaryDataAsset 클래스 기반으로 생성하였습니다.
-
-TODO : 캐릭터 Enhanced Input Branch에서 설계하기
 */
