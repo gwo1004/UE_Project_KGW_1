@@ -34,10 +34,7 @@ void APlayableController::SwitchControlMode(EControlMode Mode)
 		{
 			SubSystem->ClearAllMappings();
 			SubSystem->AddMappingContext(IMCMap[Mode], 0);
+		}
+
 	}
-
-}
-
-void APlayableController::SetupInputComponent()
-{
 }
