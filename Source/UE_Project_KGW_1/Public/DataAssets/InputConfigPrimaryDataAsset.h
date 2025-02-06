@@ -20,6 +20,7 @@ enum class EPlayableInputAction : uint8
 	Jump			UMETA(DisplayName = "Jump"),
 	LookUp			UMETA(DisplayName = "LookUp"),
 	Crouch			UMETA(DisplayName = "Crouch"),
+	StopCrouch		UMETA(DisplayName = "StopCrouch"),
 	ConvertCamera	UMETA(DisplayName = "Convert Camera"),
 	TPSMainSkill	UMETA(DisplayName = "TPS MainSkill"),
 	TPSFirstSkill	UMETA(DisplayName = "TPS FirstSkill"),

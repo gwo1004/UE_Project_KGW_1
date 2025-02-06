@@ -8,26 +8,24 @@
 #include <InputActionValue.h>
 #include "PlayerGameFramework\PlayableController.h"
 #include "DataAssets\InputConfigPrimaryDataAsset.h"
+#include <GameFramework\CharacterMovementComponent.h>
 
 APlayerableCharacterBase::APlayerableCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	SpawnSetUpCamera();
-
+	SpawnSetUpCharacterComponent();
 }
 
 void APlayerableCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void APlayerableCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -66,11 +64,86 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 				}
 
 				SetupPlayerSkillInputComponent(EnhancedInput);
+				
 			}
 		}
 	}
 
 
+}
+
+void APlayerableCharacterBase::MoveForward(const FInputActionValue& Value)
+{
+	// 애니메이션 블루프린트 및 애니메이션 인스턴스를 통해
+	// 캐릭터 클래스 기반의 값에 전달하기위해 AddMovementInput 사용
+	// DeltaTime은 CharacterMovementComponent 내부에서 연산되어 프레임에 무관한 일정한 이동속도 유지
+
+	FVector ForwardDirection = GetActorForwardVector();
+	AddMovementInput(ForwardDirection, Value.Get<float>());
+}
+
+void APlayerableCharacterBase::MoveBack(const FInputActionValue& Value)
+{
+	FVector ForwardDirection = GetActorForwardVector();
+	AddMovementInput(ForwardDirection, Value.Get<float>());
+}
+
+void APlayerableCharacterBase::MoveRight(const FInputActionValue& Value)
+{
+	FVector RightDirection = GetActorRightVector();
+	AddMovementInput(RightDirection, Value.Get<float>());
+}
+
+void APlayerableCharacterBase::MoveLeft(const FInputActionValue& Value)
+{
+	FVector RightDirection = GetActorRightVector();
+	AddMovementInput(RightDirection, Value.Get<float>());
+}
+
+void APlayerableCharacterBase::InputJump(const FInputActionValue& Value)
+{
+	Super::Jump();
+}
+
+void APlayerableCharacterBase::LookUp(const FInputActionValue& Value)
+{
+	FVector2D LookInput = Value.Get<FVector2D>();
+	AddControllerYawInput(LookInput.X);
+	AddControllerPitchInput(LookInput.Y);
+}
+
+void APlayerableCharacterBase::InputCrouch(const FInputActionValue& Value)
+{
+	if (CanCrouch())
+	{
+		Super::Crouch();
+		UE_LOG(LogTemp, Display, TEXT("InputCrouch Bind Test"));
+	}
+}
+
+void APlayerableCharacterBase::StopCrouch(const FInputActionValue& Value)
+{
+	Super::UnCrouch();
+	UE_LOG(LogTemp, Display, TEXT("StopCrouch Bind Test"));
+}
+
+void APlayerableCharacterBase::ConvertCameraActive(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Display, TEXT("ConvertCameraActive Bind Test"));
+
+	bUseFPSCamera = !bUseFPSCamera;
+	VisibilityMesh(bUseFPSCamera);
+}
+
+void APlayerableCharacterBase::VisibilityMesh(const bool isFPSCamera)
+{
+	if (GetMesh())
+	{
+		GetMesh()->SetOwnerNoSee(isFPSCamera);
+	}
+
+	TPSCameraComp->SetActive(!isFPSCamera);
+	FPSCameraComp->SetActive(isFPSCamera);
 }
 
 void APlayerableCharacterBase::SpawnSetUpCamera()
@@ -98,44 +171,14 @@ void APlayerableCharacterBase::SpawnSetUpCamera()
 	GetMesh()->SetOwnerNoSee(false);
 }
 
-void APlayerableCharacterBase::MoveForward(const FInputActionValue& Value)
+void APlayerableCharacterBase::SpawnSetUpCharacterComponent()
 {
-	UE_LOG(LogTemp, Display, TEXT("MoveForward Bind Test"));
-}
+	//Crouch
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
 
-void APlayerableCharacterBase::MoveBack(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("MoveBack Bind Test"));
-}
-
-void APlayerableCharacterBase::MoveRight(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("MoveRight Bind Test"));
-}
-
-void APlayerableCharacterBase::MoveLeft(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("MoveLeft Bind Test"));
-}
-
-void APlayerableCharacterBase::InputJump(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("InputJump Bind Test"));
-}
-
-void APlayerableCharacterBase::LookUp(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("LookUp Bind Test"));
-}
-
-void APlayerableCharacterBase::InputCrouch(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("InputCrouch Bind Test"));
-}
-
-void APlayerableCharacterBase::ConvertCameraActive(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Display, TEXT("ConvertCameraActive Bind Test"));
+	// Default = 0.05f;
+	GetCharacterMovement()->AirControl = 2.f;
 }
 
 void APlayerableCharacterBase::BindMapToDataAsset()
@@ -147,6 +190,7 @@ void APlayerableCharacterBase::BindMapToDataAsset()
 	InputActionBindings.Add(EPlayableInputAction::Jump,				&APlayerableCharacterBase::InputJump);
 	InputActionBindings.Add(EPlayableInputAction::LookUp,			&APlayerableCharacterBase::LookUp);
 	InputActionBindings.Add(EPlayableInputAction::Crouch,			&APlayerableCharacterBase::InputCrouch);
+	InputActionBindings.Add(EPlayableInputAction::StopCrouch,		&APlayerableCharacterBase::StopCrouch);
 	InputActionBindings.Add(EPlayableInputAction::ConvertCamera,	&APlayerableCharacterBase::ConvertCameraActive);
 }
 

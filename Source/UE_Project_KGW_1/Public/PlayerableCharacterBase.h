@@ -37,9 +37,7 @@ public:
 	virtual void TPSUltSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::TPSUltSkill, );
 	virtual void FPSMainSkill(const FInputActionValue& Value) PURE_VIRTUAL(APlayerableCharacterBase::FPSMainSkill, );
 protected:
-	// Constructor Settings
-	UFUNCTION()
-	void SpawnSetUpCamera();
+
 
 	// EnhancedInput Actions Func
 	UFUNCTION()
@@ -57,7 +55,10 @@ protected:
 	UFUNCTION()
 	void InputCrouch(const FInputActionValue& Value);
 	UFUNCTION()
+	void StopCrouch(const FInputActionValue& Value);
+	UFUNCTION()
 	void ConvertCameraActive(const FInputActionValue& Value);
+	
 
 protected:
 	//Camera Comp
@@ -73,11 +74,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera");
 	bool bUseFPSCamera;
 
+	// Convert Camera Mesh Settings
+	void VisibilityMesh(const bool isFPSCamera);
 private:
+	// Constructor Settings
+	void SpawnSetUpCamera();
+	void SpawnSetUpCharacterComponent();
+
 	// BindActions from DataAssetData;
 	TMap<EPlayableInputAction, UInputAction*> InputActionMap;
 	TMap<EPlayableInputAction, ETriggerEvent> InputTriggers;
 	TMap<EPlayableInputAction, void(APlayerableCharacterBase::*)(const FInputActionValue&)> InputActionBindings;
 
 	void BindMapToDataAsset();
+
+
 };
