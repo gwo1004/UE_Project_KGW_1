@@ -10,16 +10,43 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EPlayableInputAction : uint8
+{
+	MoveForward		UMETA(DisplayName = "Move Forward"),
+	MoveBack		UMETA(DisplayName = "Move Back"),
+	MoveRight		UMETA(DisplayName = "Move Right"),
+	MoveLeft		UMETA(DisplayName = "Move Left"),
+	Jump			UMETA(DisplayName = "Jump"),
+	LookUp			UMETA(DisplayName = "LookUp"),
+	Crouch			UMETA(DisplayName = "Crouch"),
+	StopCrouch		UMETA(DisplayName = "StopCrouch"),
+	ConvertCamera	UMETA(DisplayName = "Convert Camera"),
+	TPSMainSkill	UMETA(DisplayName = "TPS MainSkill"),
+	TPSFirstSkill	UMETA(DisplayName = "TPS FirstSkill"),
+	TPSSecondSkill	UMETA(DisplayName = "TPS SecondSkill"),
+	TPSUltSkill		UMETA(DisplayName = "TPS UltSkill"),
+	FPSMainSkill	UMETA(DisplayName = "FPS MainSkill")
+
+	// TODO : UI관련 조작키 추가
+};
+
 USTRUCT(BlueprintType)
 struct FPlayerDefaultInputKeyMapping
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EPlayableInputAction InputActionEnum;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UInputAction* InputAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FKey DefaultKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ETriggerEvent Trigger;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
 	TArray<UInputModifier*> Modifiers;
@@ -32,7 +59,7 @@ class UE_PROJECT_KGW_1_API UInputConfigPrimaryDataAsset : public UPrimaryDataAss
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	TArray<FPlayerDefaultInputKeyMapping> DefaultKeyMappings;
+	TArray<FPlayerDefaultInputKeyMapping> KeyMappings;
 };
 
 /*
