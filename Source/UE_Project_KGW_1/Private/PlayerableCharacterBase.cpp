@@ -9,6 +9,7 @@
 #include "PlayerGameFramework\PlayableController.h"
 #include "DataAssets\InputConfigPrimaryDataAsset.h"
 #include <GameFramework\CharacterMovementComponent.h>
+#include "Characters\AnimInstanceCharacterBase.h"
 
 APlayerableCharacterBase::APlayerableCharacterBase()
 {
@@ -16,6 +17,8 @@ APlayerableCharacterBase::APlayerableCharacterBase()
 	
 	SpawnSetUpCamera();
 	SpawnSetUpCharacterComponent();
+
+	CurrentWeaponType = EWeaponType::Melee;
 }
 
 void APlayerableCharacterBase::BeginPlay()
@@ -80,18 +83,24 @@ void APlayerableCharacterBase::MoveForward(const FInputActionValue& Value)
 
 	FVector ForwardDirection = GetActorForwardVector();
 	AddMovementInput(ForwardDirection, Value.Get<float>());
+
+	SetWeaponType(EWeaponType::Rifle);
 }
 
 void APlayerableCharacterBase::MoveBack(const FInputActionValue& Value)
 {
 	FVector ForwardDirection = GetActorForwardVector();
 	AddMovementInput(ForwardDirection, Value.Get<float>());
+
+	SetWeaponType(EWeaponType::Pistol);
 }
 
 void APlayerableCharacterBase::MoveRight(const FInputActionValue& Value)
 {
 	FVector RightDirection = GetActorRightVector();
 	AddMovementInput(RightDirection, Value.Get<float>());
+
+	SetWeaponType(EWeaponType::Melee);
 }
 
 void APlayerableCharacterBase::MoveLeft(const FInputActionValue& Value)
@@ -192,5 +201,16 @@ void APlayerableCharacterBase::BindMapToDataAsset()
 	InputActionBindings.Add(EPlayableInputAction::Crouch,			&APlayerableCharacterBase::InputCrouch);
 	InputActionBindings.Add(EPlayableInputAction::StopCrouch,		&APlayerableCharacterBase::StopCrouch);
 	InputActionBindings.Add(EPlayableInputAction::ConvertCamera,	&APlayerableCharacterBase::ConvertCameraActive);
+}
+
+void APlayerableCharacterBase::SetWeaponType(EWeaponType NewWeaponType)
+{
+	CurrentWeaponType = NewWeaponType;
+
+	UAnimInstanceCharacterBase* AnimInstance = Cast<UAnimInstanceCharacterBase>(GetMesh()->GetAnimInstance());
+	if(AnimInstance)
+	{
+		AnimInstance->WeaponType = NewWeaponType;
+	}
 }
 
