@@ -39,11 +39,11 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 	{
 		if (APlayableController* PC = Cast<APlayableController>(GetController()))
 		{
-			if (UInputConfigPrimaryDataAsset* InputActions = Cast<UInputConfigPrimaryDataAsset>(PC->IAMap[EControlMode::TPSCharacter]))
+			if (UInputConfigPrimaryDataAsset* InputActions = Cast<UInputConfigPrimaryDataAsset>(PC->ControlModeMap[EControlMode::TPSCharacter].DataAsset))
 			{
 				BindMapToDataAsset();
 				PC->SwitchControlMode(EControlMode::TPSCharacter);
-
+				PC->UpdateCurrentIMC(PC->ControlModeMap[EControlMode::TPSCharacter].DataAsset);
 				for (const FPlayerDefaultInputKeyMapping& Mapping : InputActions->KeyMappings)
 				{
 					if (Mapping.InputAction && Mapping.Trigger != ETriggerEvent::None)

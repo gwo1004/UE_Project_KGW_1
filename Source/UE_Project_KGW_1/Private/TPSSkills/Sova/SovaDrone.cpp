@@ -54,20 +54,20 @@ void ASovaDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	{
 		if (APlayableController* PC = Cast<APlayableController>(GetController()))
 		{
-			if (UDroneInputDataAsset* InputActions = Cast<UDroneInputDataAsset>(PC->IAMap[EControlMode::DRONE]))
-			{
-				PC->SwitchControlMode(EControlMode::DRONE);
+			//if (UDroneInputDataAsset* InputActions = Cast<UDroneInputDataAsset>(PC->ControlModeMap[EControlMode::DRONE].DataAsset))
+			//{
+			//	PC->SwitchControlMode(EControlMode::DRONE);
 
-				EnhancedInput->BindAction(InputActions->MoveFlight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveFlight);
-				EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Triggered, this, &ASovaDrone::MoveForaward);
-				EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Completed, this, &ASovaDrone::StopForaward);
-				EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveRight);
-				EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Completed, this, &ASovaDrone::StopRight);
-				EnhancedInput->BindAction(InputActions->MoveLook, ETriggerEvent::Triggered, this, &ASovaDrone::MoveLook);
-				EnhancedInput->BindAction(InputActions->MoveTurn, ETriggerEvent::Triggered, this, &ASovaDrone::MoveTurn);
-				EnhancedInput->BindAction(InputActions->DroneAttack, ETriggerEvent::Started, this, &ASovaDrone::DroneAttack);
-				EnhancedInput->BindAction(InputActions->DroneExit, ETriggerEvent::Started, this, &ASovaDrone::DroneExit);
-			}
+			//	EnhancedInput->BindAction(InputActions->MoveFlight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveFlight);
+			//	EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Triggered, this, &ASovaDrone::MoveForaward);
+			//	EnhancedInput->BindAction(InputActions->MoveForward, ETriggerEvent::Completed, this, &ASovaDrone::StopForaward);
+			//	EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Triggered, this, &ASovaDrone::MoveRight);
+			//	EnhancedInput->BindAction(InputActions->MoveRight, ETriggerEvent::Completed, this, &ASovaDrone::StopRight);
+			//	EnhancedInput->BindAction(InputActions->MoveLook, ETriggerEvent::Triggered, this, &ASovaDrone::MoveLook);
+			//	EnhancedInput->BindAction(InputActions->MoveTurn, ETriggerEvent::Triggered, this, &ASovaDrone::MoveTurn);
+			//	EnhancedInput->BindAction(InputActions->DroneAttack, ETriggerEvent::Started, this, &ASovaDrone::DroneAttack);
+			//	EnhancedInput->BindAction(InputActions->DroneExit, ETriggerEvent::Started, this, &ASovaDrone::DroneExit);
+			//}
 		}
 	}
 }

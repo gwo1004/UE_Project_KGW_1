@@ -84,13 +84,13 @@ struct FInputBindingInfo
 		: Trigger(Trigger), FunctionName(FunctionName) {}
 };
 
-UCLASS(Blueprintable, Config=Game)
+UCLASS(Blueprintable)
 class UE_PROJECT_KGW_1_API UInputConfigPrimaryDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TArray<FPlayerDefaultInputKeyMapping> KeyMappings;
 };
 

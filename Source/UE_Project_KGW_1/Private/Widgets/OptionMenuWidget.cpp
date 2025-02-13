@@ -7,6 +7,7 @@
 #include "Components\TextBlock.h"
 #include "Widgets\OptionKeyBindWidget.h"
 #include "DataAssets\InputConfigPrimaryDataAsset.h"
+#include "PlayerGameFramework\PlayableController.h"
 
 bool UOptionMenuWidget::Initialize()
 {
@@ -38,6 +39,8 @@ void UOptionMenuWidget::NativeConstruct()
 	PopulateKeyBindings();
 }
 
+
+
 void UOptionMenuWidget::OnApplyButtonClicked()
 {
 	UE_LOG(LogTemp, Log, TEXT("Apply Start"));
@@ -55,6 +58,11 @@ void UOptionMenuWidget::OnApplyButtonClicked()
 	UE_LOG(LogTemp, Log, TEXT("Apply End"));
 
 	PendingKeyChanges.Empty();
+
+	if (APlayableController* PC = Cast<APlayableController>(GetOwningPlayer()))
+	{
+		PC->UpdateCurrentIMC(CurrentKeyDataAsset);
+	}
 }
 
 void UOptionMenuWidget::OnResetButtonClicked()
@@ -64,6 +72,11 @@ void UOptionMenuWidget::OnResetButtonClicked()
 	for (auto& KeyMapping : CurrentKeyDataAsset->KeyMappings)
 	{
 		KeyMapping.CurrentKey = KeyMapping.DefaultKey;
+	}
+	
+	if (APlayableController* PC = Cast<APlayableController>(GetOwningPlayer()))
+	{
+		PC->UpdateCurrentIMC(CurrentKeyDataAsset);
 	}
 
 	PendingKeyChanges.Empty();
