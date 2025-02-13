@@ -6,6 +6,13 @@
 #include "Components\TextBlock.h"
 #include "Components\Border.h"
 
+bool UOptionKeyBindWidget::Initialize()
+{
+	bool bSuccess = Super::Initialize();
+	bIsFocusable = true;
+	return bSuccess;
+}
+
 void UOptionKeyBindWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -14,7 +21,29 @@ void UOptionKeyBindWidget::NativeConstruct()
 	{
 		KeyButton->OnClicked.AddDynamic(this, &UOptionKeyBindWidget::OnKeyButtonClicked);
 	}
+}
 
+FReply UOptionKeyBindWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (bIsClickedButton)
+	{
+		FKey NewKey = InKeyEvent.GetKey();
+		OnKeyBindingUpdated.Broadcast(this, NewKey);
+
+		//CurrentData.CurrentKey = NewKey;
+
+		if (KeyText)
+		{
+			KeyText->SetText(NewKey.GetDisplayName());
+		}
+
+		bIsClickedButton = false;
+
+		
+		return FReply::Handled();
+	}
+
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
 void UOptionKeyBindWidget::SetKeyBindWidget(const FKeyBindingData& Data)
@@ -48,5 +77,12 @@ void UOptionKeyBindWidget::SetKeyBindWidget(const FKeyBindingData& Data)
 
 void UOptionKeyBindWidget::OnKeyButtonClicked()
 {
-	OnKeyBindingUpdated.Broadcast(this,CurrentData.CurrentKey);
+	//OnKeyBindingUpdated.Broadcast(this,CurrentData.CurrentKey);
+
+	bIsClickedButton = true;
+
+	if (KeyText)
+	{
+		KeyText->SetText(FText::FromString(TEXT("-")));
+	}
 }

@@ -47,7 +47,11 @@ class UE_PROJECT_KGW_1_API UOptionKeyBindWidget : public UUserWidget
 	
 
 public:
+	virtual bool Initialize() override;
+
 	virtual void NativeConstruct() override;
+
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	void SetKeyBindWidget(const FKeyBindingData& Data);
 
@@ -56,7 +60,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	int32 Index;
-protected:
+
+public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ActionText;
 	
@@ -69,11 +74,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UBorder* ActionBorder;
 
-
+	FKeyBindingData CurrentData;
 private:
 	UFUNCTION()
 	void OnKeyButtonClicked();
 
-	FKeyBindingData CurrentData;
+	bool bIsClickedButton;
 
+	FKey PendingKey;
 };

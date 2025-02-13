@@ -75,6 +75,7 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 
 }
 
+
 void APlayerableCharacterBase::MoveForward(const FInputActionValue& Value)
 {
 	// 애니메이션 블루프린트 및 애니메이션 인스턴스를 통해

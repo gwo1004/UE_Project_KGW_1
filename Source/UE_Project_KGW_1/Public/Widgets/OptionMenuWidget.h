@@ -21,6 +21,7 @@ class UE_PROJECT_KGW_1_API UOptionMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual bool Initialize() override;
 	virtual void NativeConstruct() override;
 
 protected:
@@ -28,10 +29,10 @@ protected:
 	UScrollBox* KeyBindingList;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* ResetButton;
+	UButton* ApplyButton;
 
-	UPROPERTY(EditAnywhere, Category = "KeyBindings")
-	UInputConfigPrimaryDataAsset* DefaultKeyDataAsset;
+	UPROPERTY(meta = (BindWidget))
+	UButton* ResetButton;
 
 	UPROPERTY(EditAnywhere, Category = "KeyBindings")
 	UInputConfigPrimaryDataAsset* CurrentKeyDataAsset;
@@ -40,6 +41,11 @@ protected:
 	TSubclassOf<UOptionKeyBindWidget> KeyBindWidgetClass;
 
 private:
+	TMap<FString, FKey> PendingKeyChanges;
+
+	UFUNCTION()
+	void OnApplyButtonClicked();
+
 	UFUNCTION()
 	void OnResetButtonClicked();
 
