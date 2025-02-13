@@ -20,7 +20,6 @@ enum class EPlayableInputAction : uint8
 	Jump			UMETA(DisplayName = "Jump"),
 	LookUp			UMETA(DisplayName = "LookUp"),
 	Crouch			UMETA(DisplayName = "Crouch"),
-	StopCrouch		UMETA(DisplayName = "StopCrouch"),
 	ConvertCamera	UMETA(DisplayName = "Convert Camera"),
 	TPSMainSkill	UMETA(DisplayName = "TPS MainSkill"),
 	TPSFirstSkill	UMETA(DisplayName = "TPS FirstSkill"),
@@ -67,6 +66,22 @@ struct FPlayerDefaultInputKeyMapping
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bCanModify;
+};
+
+USTRUCT()
+struct FInputBindingInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	ETriggerEvent Trigger;
+
+	UPROPERTY()
+	FName FunctionName;
+
+	FInputBindingInfo() {}
+	FInputBindingInfo(ETriggerEvent Trigger, FName FunctionName)
+		: Trigger(Trigger), FunctionName(FunctionName) {}
 };
 
 UCLASS(Blueprintable, Config=Game)

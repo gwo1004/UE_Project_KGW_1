@@ -46,10 +46,9 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 
 				for (const FPlayerDefaultInputKeyMapping& Mapping : InputActions->KeyMappings)
 				{
-					if (Mapping.InputAction  && Mapping.Trigger != ETriggerEvent::None)
+					if (Mapping.InputAction && Mapping.Trigger != ETriggerEvent::None)
 					{
 						InputActionMap.Add(Mapping.InputActionEnum, Mapping.InputAction);
-						InputTriggers.Add(Mapping.InputActionEnum, Mapping.Trigger);
 					}
 				}
 
@@ -58,20 +57,20 @@ void APlayerableCharacterBase::SetupPlayerInputComponent(UInputComponent* Player
 					if (InputActionMap.Contains(Pair.Key))
 					{
 						UInputAction* IA = InputActionMap[Pair.Key];
-						ETriggerEvent Trigger = InputTriggers[Pair.Key];
-						if (IA && Trigger != ETriggerEvent::None)
+						if (IA)
 						{
-							EnhancedInput->BindAction(IA, Trigger, this, Pair.Value);
+							for (const FInputBindingInfo& BindingInfo : Pair.Value)
+							{
+								EnhancedInput->BindAction(IA, BindingInfo.Trigger, this, FName(BindingInfo.FunctionName));
+							}
 						}
 					}
 				}
 
 				SetupPlayerSkillInputComponent(EnhancedInput);
-				
 			}
 		}
 	}
-
 
 }
 
@@ -193,15 +192,19 @@ void APlayerableCharacterBase::SpawnSetUpCharacterComponent()
 
 void APlayerableCharacterBase::BindMapToDataAsset()
 {
-	InputActionBindings.Add(EPlayableInputAction::MoveForward,		&APlayerableCharacterBase::MoveForward);
-	InputActionBindings.Add(EPlayableInputAction::MoveBack,			&APlayerableCharacterBase::MoveBack);
-	InputActionBindings.Add(EPlayableInputAction::MoveRight,		&APlayerableCharacterBase::MoveRight);
-	InputActionBindings.Add(EPlayableInputAction::MoveLeft,			&APlayerableCharacterBase::MoveLeft);
-	InputActionBindings.Add(EPlayableInputAction::Jump,				&APlayerableCharacterBase::InputJump);
-	InputActionBindings.Add(EPlayableInputAction::LookUp,			&APlayerableCharacterBase::LookUp);
-	InputActionBindings.Add(EPlayableInputAction::Crouch,			&APlayerableCharacterBase::InputCrouch);
-	InputActionBindings.Add(EPlayableInputAction::StopCrouch,		&APlayerableCharacterBase::StopCrouch);
-	InputActionBindings.Add(EPlayableInputAction::ConvertCamera,	&APlayerableCharacterBase::ConvertCameraActive);
+	InputActionBindings.Add(EPlayableInputAction::MoveForward, { {ETriggerEvent::Triggered, "MoveForward"} });
+	InputActionBindings.Add(EPlayableInputAction::MoveBack, { {ETriggerEvent::Triggered, "MoveBack"} });
+	InputActionBindings.Add(EPlayableInputAction::MoveRight, { {ETriggerEvent::Triggered, "MoveRight"} });
+	InputActionBindings.Add(EPlayableInputAction::MoveLeft, { {ETriggerEvent::Triggered, "MoveLeft"} });
+	InputActionBindings.Add(EPlayableInputAction::Jump, { {ETriggerEvent::Started, "InputJump"} });
+	InputActionBindings.Add(EPlayableInputAction::LookUp, { {ETriggerEvent::Triggered, "LookUp"} });
+	InputActionBindings.Add(EPlayableInputAction::ConvertCamera, { {ETriggerEvent::Started, "ConvertCameraActive"} });
+
+	InputActionBindings.Add(EPlayableInputAction::Crouch, {
+	{ETriggerEvent::Started, "InputCrouch"},
+	{ETriggerEvent::Completed, "StopCrouch"}
+		});
+
 }
 
 void APlayerableCharacterBase::SetWeaponType(EWeaponType NewWeaponType)
