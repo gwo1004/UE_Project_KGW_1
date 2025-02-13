@@ -9,14 +9,14 @@
 #include "DataAssets\InputConfigPrimaryDataAsset.h"
 #include "PlayerGameFramework\PlayableController.h"
 
-bool UOptionMenuWidget::Initialize()
+void UOptionMenuWidget::NativeOnInitialized()
 {
-	bool bSuccess = Super::Initialize();
+	Super::NativeOnInitialized();
 
 	if (!CurrentKeyDataAsset)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DataAsset is missing"));
-		return false;
+		return;
 	}
 
 	if (ApplyButton && !ApplyButton->OnClicked.IsBound())
@@ -27,8 +27,6 @@ bool UOptionMenuWidget::Initialize()
 	{
 		ResetButton->OnClicked.AddDynamic(this, &UOptionMenuWidget::OnResetButtonClicked);
 	}
-
-	return bSuccess;
 }
 
 void UOptionMenuWidget::NativeConstruct()

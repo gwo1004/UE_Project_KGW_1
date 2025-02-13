@@ -6,11 +6,10 @@
 #include "Components\TextBlock.h"
 #include "Components\Border.h"
 
-bool UOptionKeyBindWidget::Initialize()
+void UOptionKeyBindWidget::NativeOnInitialized()
 {
-	bool bSuccess = Super::Initialize();
+	Super::NativeOnInitialized();
 	bIsFocusable = true;
-	return bSuccess;
 }
 
 void UOptionKeyBindWidget::NativeConstruct()
@@ -29,8 +28,6 @@ FReply UOptionKeyBindWidget::NativeOnKeyDown(const FGeometry& InGeometry, const 
 	{
 		FKey NewKey = InKeyEvent.GetKey();
 		OnKeyBindingUpdated.Broadcast(this, NewKey);
-
-		//CurrentData.CurrentKey = NewKey;
 
 		if (KeyText)
 		{
@@ -77,8 +74,6 @@ void UOptionKeyBindWidget::SetKeyBindWidget(const FKeyBindingData& Data)
 
 void UOptionKeyBindWidget::OnKeyButtonClicked()
 {
-	//OnKeyBindingUpdated.Broadcast(this,CurrentData.CurrentKey);
-
 	bIsClickedButton = true;
 
 	if (KeyText)

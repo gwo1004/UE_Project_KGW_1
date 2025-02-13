@@ -21,7 +21,7 @@ class UE_PROJECT_KGW_1_API UOptionMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 
 protected:

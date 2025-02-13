@@ -47,7 +47,7 @@ class UE_PROJECT_KGW_1_API UOptionKeyBindWidget : public UUserWidget
 	
 
 public:
-	virtual bool Initialize() override;
+	virtual void NativeOnInitialized() override;
 
 	virtual void NativeConstruct() override;
 
