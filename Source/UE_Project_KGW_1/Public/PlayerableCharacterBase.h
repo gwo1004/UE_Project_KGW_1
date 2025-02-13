@@ -84,8 +84,7 @@ private:
 
 	// BindActions from DataAssetData;
 	TMap<EPlayableInputAction, UInputAction*> InputActionMap;
-	TMap<EPlayableInputAction, ETriggerEvent> InputTriggers;
-	TMap<EPlayableInputAction, void(APlayerableCharacterBase::*)(const FInputActionValue&)> InputActionBindings;
+	TMap<EPlayableInputAction, TArray<FInputBindingInfo>> InputActionBindings;
 
 	void BindMapToDataAsset();
 

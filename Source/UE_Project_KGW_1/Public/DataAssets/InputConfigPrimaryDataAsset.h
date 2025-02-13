@@ -20,7 +20,6 @@ enum class EPlayableInputAction : uint8
 	Jump			UMETA(DisplayName = "Jump"),
 	LookUp			UMETA(DisplayName = "LookUp"),
 	Crouch			UMETA(DisplayName = "Crouch"),
-	StopCrouch		UMETA(DisplayName = "StopCrouch"),
 	ConvertCamera	UMETA(DisplayName = "Convert Camera"),
 	TPSMainSkill	UMETA(DisplayName = "TPS MainSkill"),
 	TPSFirstSkill	UMETA(DisplayName = "TPS FirstSkill"),
@@ -31,12 +30,23 @@ enum class EPlayableInputAction : uint8
 	// TODO : UI관련 조작키 추가
 };
 
+UENUM(BlueprintType)
+enum class EPlayableInputType : uint8
+{
+	Skill UMETA(DisplayName = "Skill"),
+	Move UMETA(DisplayName = "Move"),
+	Control UMETA(DisplayName = "Control")
+};
+
 USTRUCT(BlueprintType)
 struct FPlayerDefaultInputKeyMapping
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EPlayableInputType InputType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPlayableInputAction InputActionEnum;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -46,10 +56,32 @@ struct FPlayerDefaultInputKeyMapping
 	FKey DefaultKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FKey CurrentKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ETriggerEvent Trigger;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
 	TArray<UInputModifier*> Modifiers;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bCanModify;
+};
+
+USTRUCT()
+struct FInputBindingInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	ETriggerEvent Trigger;
+
+	UPROPERTY()
+	FName FunctionName;
+
+	FInputBindingInfo() {}
+	FInputBindingInfo(ETriggerEvent Trigger, FName FunctionName)
+		: Trigger(Trigger), FunctionName(FunctionName) {}
 };
 
 UCLASS(Blueprintable)
