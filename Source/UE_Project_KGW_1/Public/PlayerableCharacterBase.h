@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "IPlayerSkill.h"
 #include "DataAssets\InputConfigPrimaryDataAsset.h"
-#include "Weapons\EWeaponType.h"
 #include "PlayerableCharacterBase.generated.h"
 
 class USpringArmComponent;
@@ -89,12 +88,5 @@ private:
 
 	void BindMapToDataAsset();
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	EWeaponType CurrentWeaponType;
 
-	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void SetWeaponType(EWeaponType NewWeaponType);
-
-	EWeaponType GetWeaponType() const { return CurrentWeaponType; }
 };
