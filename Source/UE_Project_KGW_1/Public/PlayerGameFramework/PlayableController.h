@@ -12,13 +12,27 @@
 
 class UInputMappingContext;
 class UDroneInputDataAsset;
+class UInputConfigPrimaryDataAsset;
 
 UENUM(BlueprintType)
 enum class EControlMode : uint8
 {
-	TPSCharacter UMETA(DisplayName = "TPSCharacter"),
-	FPSCharacter UMETA(DisplayName = "FPSCharacter"),
-	DRONE	UMETA(DisplayName = "Drone")
+	NONE			UMETA(DisplayName = "None"),
+	TPSCharacter	UMETA(DisplayName = "TPSCharacter"),
+	FPSCharacter	UMETA(DisplayName = "FPSCharacter"),
+	DRONE			UMETA(DisplayName = "Drone")
+};
+
+USTRUCT(BlueprintType)
+struct FControlModeMapping
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputMappingContext* IMC;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputConfigPrimaryDataAsset* DataAsset;
 };
 
 UCLASS()
@@ -34,11 +48,11 @@ public:
 	UFUNCTION()
 	void SwitchControlMode(EControlMode Mode);
 
-	
+	UFUNCTION()
+	void UpdateCurrentIMC(UInputConfigPrimaryDataAsset* CurrentDataAsset);
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
-	TMap<EControlMode, UInputMappingContext*> IMCMap;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
-	TMap<EControlMode, UDataAsset*> IAMap;
+	TMap<EControlMode, FControlModeMapping> ControlModeMap;
+private:
+	EControlMode CurrentMode;
 };
