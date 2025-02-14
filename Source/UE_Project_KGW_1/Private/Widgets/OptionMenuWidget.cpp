@@ -37,8 +37,6 @@ void UOptionMenuWidget::NativeConstruct()
 	PopulateKeyBindings();
 }
 
-
-
 void UOptionMenuWidget::OnApplyButtonClicked()
 {
 	UE_LOG(LogTemp, Log, TEXT("Apply Start"));
@@ -112,10 +110,5 @@ void UOptionMenuWidget::PopulateKeyBindings()
 
 		KeyWidget->OnKeyBindingUpdated.AddDynamic(this, &UOptionMenuWidget::HandleKeyBindingUpdated);
 		KeyBindingList->AddChild(KeyWidget);
-
-		// 무언가를 추가했습니다.
-		// 원격으로 보내서 작업물을 동기화할거에요
-		// Asset
-
 	}
 }

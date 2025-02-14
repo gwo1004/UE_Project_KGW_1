@@ -10,16 +10,18 @@ void UOptionKeyBindWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	bIsFocusable = true;
+
+	if (KeyButton)
+	{
+		KeyButton->OnClicked.AddDynamic(this, &UOptionKeyBindWidget::OnKeyButtonClicked);
+	}
 }
 
 void UOptionKeyBindWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (KeyButton)
-	{
-		KeyButton->OnClicked.AddDynamic(this, &UOptionKeyBindWidget::OnKeyButtonClicked);
-	}
+
 }
 
 FReply UOptionKeyBindWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)

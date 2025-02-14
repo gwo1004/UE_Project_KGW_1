@@ -14,4 +14,6 @@ class UE_PROJECT_KGW_1_API AShootingGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 };
