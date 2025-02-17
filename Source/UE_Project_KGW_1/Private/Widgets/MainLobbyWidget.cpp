@@ -4,6 +4,7 @@
 #include "Widgets/MainLobbyWidget.h"
 #include "Components\Button.h"
 #include "PlayerGameFramework\PlayableController.h"
+#include "Widgets/OptionMenuWidget.h"
 
 void UMainLobbyWidget::NativeOnInitialized()
 {
@@ -15,13 +16,11 @@ void UMainLobbyWidget::NativeOnInitialized()
 
 	if (StartButton && !StartButton->OnClicked.IsBound())
 	{
-		UE_LOG(LogTemp, Display, TEXT("StartButton Bound"));
 		StartButton->OnClicked.AddDynamic(this, &UMainLobbyWidget::OpenInGameLevel);
 	}
 
 	if (OptionButton && !OptionButton->OnClicked.IsBound())
 	{
-		UE_LOG(LogTemp, Display, TEXT("OptionButton Bound"));
 		OptionButton->OnClicked.AddDynamic(this, &UMainLobbyWidget::OpenOptionMenu);
 	}
 
@@ -30,6 +29,33 @@ void UMainLobbyWidget::NativeOnInitialized()
 void UMainLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+}
+
+UUserWidget* UMainLobbyWidget::OpenUI(const FString& WidgetName)
+{
+	if (TSubclassOf<UUserWidget>* FindWidget = WidgetClass.Find(WidgetName))
+	{
+		if (FindWidget)
+		{
+			UUserWidget* TargetWidget = CreateWidget<UUserWidget>(GetWorld(), *FindWidget);
+			if (!TargetWidget)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Can't Create Widget : %s"), *WidgetName);
+			}
+
+			TargetWidget->AddToViewport();
+			TargetWidget->SetVisibility(ESlateVisibility::Visible);
+			return TargetWidget;
+
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Can't Found Widget : %s"), *WidgetName);
+	return nullptr;
+}
+
+void UMainLobbyWidget::CloseUI(UUserWidget* Wiget)
+{
 }
 
 void UMainLobbyWidget::OpenInGameLevel()
@@ -70,4 +96,5 @@ void UMainLobbyWidget::OpenInGameLevel()
 
 void UMainLobbyWidget::OpenOptionMenu()
 {
+	OpenUI("OptionMenu");
 }

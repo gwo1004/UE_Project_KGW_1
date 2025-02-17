@@ -21,6 +21,11 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 	
+	UFUNCTION()
+	UUserWidget* OpenUI(const FString& WidgetName);
+
+	UFUNCTION()
+	void CloseUI(UUserWidget* Wiget);
 public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* StartButton;
@@ -30,6 +35,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
 	TArray<FName> LevelMapNames;
+
+protected:
+	// TODO : DataAsset/DataTable을 사용한 String 관리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TMap<FString, TSubclassOf<UUserWidget>> WidgetClass;
+
 private:
 	UFUNCTION()
 	void OpenInGameLevel();

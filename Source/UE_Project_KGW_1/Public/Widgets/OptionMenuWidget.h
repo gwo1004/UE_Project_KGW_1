@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* ResetButton;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* CloseButton;
+
 	UPROPERTY(EditAnywhere, Category = "KeyBindings")
 	UInputConfigPrimaryDataAsset* CurrentKeyDataAsset;
 
@@ -48,6 +51,9 @@ private:
 
 	UFUNCTION()
 	void OnResetButtonClicked();
+
+	UFUNCTION()
+	void OnCloseButtonClicked();
 
 	UFUNCTION()
 	void HandleKeyBindingUpdated(UOptionKeyBindWidget* Widget, FKey NewKey);

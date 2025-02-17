@@ -27,6 +27,10 @@ void UOptionMenuWidget::NativeOnInitialized()
 	{
 		ResetButton->OnClicked.AddDynamic(this, &UOptionMenuWidget::OnResetButtonClicked);
 	}
+	if (CloseButton && !CloseButton->OnClicked.IsBound())
+	{
+		CloseButton->OnClicked.AddDynamic(this, &UOptionMenuWidget::OnCloseButtonClicked);
+	}
 }
 
 void UOptionMenuWidget::NativeConstruct()
@@ -79,6 +83,11 @@ void UOptionMenuWidget::OnResetButtonClicked()
 
 	PopulateKeyBindings();
 	UE_LOG(LogTemp, Log, TEXT("Reset End"));
+}
+
+void UOptionMenuWidget::OnCloseButtonClicked()
+{
+	RemoveFromParent();
 }
 
 void UOptionMenuWidget::HandleKeyBindingUpdated(UOptionKeyBindWidget* Widget, FKey NewKey)
